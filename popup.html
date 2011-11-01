@@ -1,0 +1,242 @@
+<html>
+<head>
+<style>
+body {
+  min-width: 280px;
+  overflow-x: hidden;
+  background-color: #333;
+  color: #fff;
+}
+
+div {
+  text-align: center;
+}
+
+ul {
+  margin: 0 0 0 1em;
+  padding: 0;
+  list-style-type: none;
+}
+
+#conBody{
+  margin: 0 auto;
+  position: relative;
+}
+
+#header {
+  border: 1px dotted white;
+  width: 100%
+  height: 100px;
+}
+
+#count {
+  float: left;
+  width: 80px;
+}
+
+#base {
+  float: right;
+  width: 180px;
+  height: 20px;
+}
+
+#battle {
+  border: 1px dotted white;
+  width: 100%;
+  clear: both;
+}
+
+#footer {
+  width: 100%;
+}
+
+#url a{
+  background-color: #888888;
+}
+</style>
+<script type="text/javascript" src="jquery-1.6.4.min.js"></script>
+<script>
+  $(function(){
+    update();
+   });
+  function update() {
+    var bbstat = 0;
+    var nurlf = null;
+    var sptitle = '';
+    
+    $.ajax("http://baseball.yahoo.co.jp/npb/", {
+      type: 'GET',
+      dataType: 'html',
+      mimeType: 'text/html',
+      success: function(response) {
+        var teams = { 'dragons': '中日', 'tigers': '阪神', 'giants': '巨人', 'swallows': 'ヤクルト', 'carp': '広島', 'baystars': '横浜',
+                      'hawks': 'ソフトバンク', 'lions': '西武', 'marines': 'ロッテ', 'fighters': '日本ハム', 'baffaloes': 'オリックス', 'goldeneagles': '楽天'};
+        var steam = localStorage["selected_team"];
+        if(steam == undefined) steam = 'dragons';
+        $('table.teams', response).each(function() {
+          if($(this).text().indexOf(teams[steam]) != -1) {
+            $('td.active', this).each(function() {
+              nurlf = $(this).children('a').attr('href');
+              bbstat = 1;
+            });
+            if(nurlf == null) {
+              $('td.standby', this).each(function() {
+                nurlf = $(this).children('a').attr('href');
+                if($(this).text().indexOf('中止') != -1) {
+                  bbstat = 4;
+                } else {
+                  bbstat = 2;
+                }
+              });
+            }
+            if(nurlf == null) {
+              $('td.end', this).each(function() {
+                nurlf = $(this).children('a').attr('href');
+                bbstat = 3;
+              });
+            }
+          }
+        });
+        $('table.NpbSP', response).each(function() {
+          sptitle = "～ " + $('div.yjMSt',response).text() + " ～";
+          $('div.standby', this).each(function() {
+            nurlf = $(this).children('a').attr('href');
+            if($(this).text().indexOf('結果') != -1) {
+              bbstat = 3;
+            } else if($(this).text().indexOf('中止') != -1) {
+              bbstat = 4;
+            } else if($(this).text().indexOf('試合前') != -1) {
+              bbstat = 2;
+            } else {
+              bbstat = 1;
+            }
+          });
+        });
+        $('table.cm2', response).each(function() {
+          sptitle = "～ " + $('div.yjMSt',response).text() + " ～";
+          if($(this).text().indexOf(teams[steam]) != -1) {
+            $('td.active', this).each(function() {
+              nurlf = $(this).children('a').attr('href');
+              bbstat = 1;
+            });
+            if(nurlf == null) {
+              $('td.standby', this).each(function() {
+                nurlf = $(this).children('a').attr('href');
+                if($(this).text().indexOf('中止') != -1) {
+                  bbstat = 4;
+                } else {
+                  bbstat = 2;
+                }
+              });
+            }
+            if(nurlf == null) {
+              $('td.end', this).each(function() {
+                nurlf = $(this).children('a').attr('href');
+                bbstat = 3;
+              });
+            }
+          }
+        });
+        
+        switch(bbstat) {
+        case 0:
+          $('#header').text("試合なし");
+          $('#url a').attr("href", "http://baseball.yahoo.co.jp/");
+          break;
+        case 1:
+        case 3:
+          $.ajax("http://live.baseball.yahoo.co.jp"+nurlf+"score", {
+            type: 'GET',
+            dataType: 'html',
+            mimeType: 'text/html',
+            success: function(response) {
+              $('#sptitle').text(sptitle);
+              $('#header').text($('#tb1 th',response).text()+" "+$('#tb1 td.sum',response).text()+" - "+$('#tb2 td.sum',response).text()+" "+$('#tb2 th',response).text()+" || ");
+              if(bbstat == 1) {
+                $('#header').append($('#sbo h4.live em',response).text());
+              } else {
+                $('#header').append("試合終了");
+              }
+              
+              $('#scnt').text("S "+$('p.s b',response).text().length);
+              $('#bcnt').text("B "+$('p.b b',response).text().length);
+              $('#ocnt').text("O "+$('p.o b',response).text().length);
+              
+              $('#base1').text("一塁["+$('#base1 span', response).text()+"]");
+              $('#base2').text("二塁["+$('#base2 span', response).text()+"]");
+              $('#base3').text("三塁["+$('#base3 span', response).text()+"]");
+              
+              $('#battle').text("打者："+$('#batter td.nm a', response).text()+" vs. 投手："+$('#pitcherR td.nm a', response).text()+$('#pitcherL td.nm a', response).text());
+              $('#ball').text($('#kyusyuR p em', response).text()+$('#kyusyuL p em', response).text());
+              $('#result').text($('#result', response).text());
+              $('#url a').attr("href", "http://live.baseball.yahoo.co.jp"+nurlf+"score");
+            }
+          });
+          break;
+        case 2:
+        case 4:
+          $.ajax("http://baseball.yahoo.co.jp"+nurlf+"top", {
+            type: 'GET',
+            dataType: 'html',
+            mimeType: 'text/html',
+            success: function(response) {
+              $('#sptitle').text(sptitle);
+              $('#header').text($('#yjSNLiveNavi em',response).text());
+              if(bbstat == 2) {
+                $('#battle').text($('p.stadium', response).text());
+              } else {
+                $('#battle').text("中止");
+              }
+              $('#url a').attr("href", "http://baseball.yahoo.co.jp"+nurlf+"top");
+            }
+          });
+          break;
+        }
+//         if(bbstat != a || bflag) {
+//           var notif = webkitNotifications.createNotification('icon.png',$('#yjSNLiveNavi em',response).text(),$('p.stadium', response).text());
+//           notif.ondisplay = function() {
+//             setTimeout(function(n){ n.cancel(); }, 3*1000, this);
+//           }
+//           notif.show();
+//         }
+      }
+    });
+  }
+  function body() {
+    return $("body").html();
+  }
+</script>
+ </head>
+ <body>
+ <div id="conBody">
+ <div id="sptitle"></div>
+ <div id="header"></div>
+
+ <div>
+   <div id="count">
+     <ul>
+     <li id="bcnt"> </li>
+     <li id="scnt"> </li>
+     <li id="ocnt"> </li>
+     </ul>
+   </div>
+   <div id="base">
+     <ul>
+     <li id="base1"></li>
+     <li id="base2"></li>
+     <li id="base3"></li>
+     </ul>
+   </div>
+ </div>
+ <div id="battle"></div>
+ <div id="footer">
+   <ul>
+   <li id="ball"></li>
+   <li id="result"></li>
+   </ul>
+   <hr>
+   <div id="url"><a target="_blank">Yahoo!プロ野球</a></div>
+ </div>
+ </div>
+ </body>
+</html>
