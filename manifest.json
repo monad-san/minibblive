@@ -1,6 +1,6 @@
 {
   "name": "MiniBBLive!",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Mini NPB Notifier Extension",
   "options_page": "options.html",
   "browser_action": {
