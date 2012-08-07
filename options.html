@@ -1,40 +1,10 @@
 <html>
 <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>MiniBBLive! Options</title>
+  <script type="text/javascript" src="options.js"></script>
 </head>
-<script>
-
-function save_options() {
-  var select = document.getElementById("team");
-  var team = select.children[select.selectedIndex].value;
-  localStorage["selected_team"] = team;
-
-  // Update status to let user know options were saved.
-  var status = document.getElementById("status");
-  status.innerHTML = "Options Saved.";
-  setTimeout(function() {
-    status.innerHTML = "";
-  }, 750);
-}
-
-function restore_options() {
-  var team = localStorage["selected_team"];
-  if (!team) {
-    return;
-  }
-  var select = document.getElementById("team");
-  for (var i = 0; i < select.children.length; i++) {
-    var child = select.children[i];
-    if (child.value == team) {
-      child.selected = "true";
-      break;
-    }
-  }
-}
-
-</script>
-
-<body onload="restore_options()">
+<body>
 表示するチーム:
 <select id="team">
  <option value="dragons">中日ドラゴンズ</option>
@@ -51,7 +21,7 @@ function restore_options() {
  <option value="goldeneagles">東北楽天ゴールデンイーグルス</option>
 </select>
 <br>
-<button onclick="save_options()">Save</button>
+<button>Save</button>
 <div id="status"></div>
 </body>
 </html>

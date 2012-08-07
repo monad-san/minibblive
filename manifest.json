@@ -1,11 +1,19 @@
 {
+  "manifest_version": 2,
   "name": "MiniBBLive!",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Mini NPB Notifier Extension",
+  "web_accessible_resources": [
+    "icon.png",
+    "jquery-1.7.2.min.js",
+    "minibblive.css",
+    "minibblive.js",
+    "options.js"
+  ],
   "options_page": "options.html",
   "browser_action": {
     "default_icon": "icon.png",
-    "popup": "popup.html"
+    "default_popup": "popup.html"
   },
   "permissions": [
     "http://baseball.yahoo.co.jp/",
