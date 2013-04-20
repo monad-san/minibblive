@@ -79,7 +79,7 @@ function update() {
           mimeType: 'text/html',
           success: function(response) {
             $('#sptitle').text(sptitle);
-            $('#header').text($('#tb1 th',response).text()+" "+$('#tb1 td.sum',response).text()+" - "+$('#tb2 td.sum',response).text()+" "+$('#tb2 th',response).text()+" || ");
+            $('#header').text($('li.watchNow p.teamL span.team',response).text()+" "+$('li.watchNow p.liveC span.score',response).text()+" "+$('li.watchNow p.teamR span.team',response).text()+" || ");
             if(bbstat == 1) {
               $('#header').append($('#sbo h4.live em',response).text());
             } else {
