@@ -109,7 +109,7 @@ function update() {
           mimeType: 'text/html',
           success: function(response) {
             $('#sptitle').text(sptitle);
-            $('#header').text($('#yjSNLiveNavi em',response).text());
+            $('#header').text($('#ch-navi em',response).text());
             if(bbstat == 2) {
               $('#battle').text($('p.stadium', response).text());
             } else {
