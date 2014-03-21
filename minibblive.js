@@ -79,7 +79,10 @@ function update() {
           mimeType: 'text/html',
           success: function(response) {
             $('#sptitle').text(sptitle);
-            $('#header').text($('li.watchNow p.teamL span.team',response).text()+" "+$('li.watchNow p.liveC span.score',response).text()+" "+$('li.watchNow p.teamR span.team',response).text()+" || ");
+            var matchings = $('#scoreboard table tbody tr:not(".chs-title") th',response);
+            var scores = $('#scoreboard table tbody tr td.sum',response);
+            $('#header').text(matchings[0].innerText+" "+scores[0].innerText+
+                        " - "+scores[1].innerText+" "+matchings[1].innerText+ " || ");
             if(bbstat == 1) {
               $('#header').append($('#sbo h4.live em',response).text());
             } else {
